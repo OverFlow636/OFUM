@@ -9,7 +9,10 @@ App::uses('OfumAppModel', 'Ofum.Model');
  */
 class Group extends OfumAppModel
 {
-
+	public $actsAs = array(
+		'Tree'
+	);
+	
 	public $validate = array(
 		'name' => array(
 			'notempty' => array(

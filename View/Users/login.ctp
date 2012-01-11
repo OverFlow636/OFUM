@@ -1,5 +1,5 @@
 <?php
-//$this->layout = 'default2';
+$this->layout = 'cakeDefault';
 
 echo $this->Form->create('User', array(
 	'action'=>'login'

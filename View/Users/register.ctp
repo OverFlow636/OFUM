@@ -1,4 +1,5 @@
 <?php
+$this->layout = 'cakeDefault';
 
 echo $this->Form->create('User', array(
 	'action'=>'register'

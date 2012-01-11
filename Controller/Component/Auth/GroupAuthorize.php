@@ -17,18 +17,22 @@ class GroupAuthorize extends BaseAuthorize
      */
     public function authorize($user, CakeRequest $request)
 	{
-        if (isset($this->settings['authorizeAll']) && $this->settings['authorizeAll']) 
-            return true;
-
-        if ($user['group_id'] == 1)
-		{
-            // superadmin user is cool
-            return true;
-        }
-
-        $actionRequested = Router::parse($request->here(false));
+		$actionRequested = Router::parse($request->here(false));
 
         $this->_log("user: ${user['email']} is trying to access: p(${actionRequested['plugin']}) c(${actionRequested['controller']}) a(${actionRequested['action']}) ");
+
+
+		$this->User = ClassRegistry::init('Ofum.User', 'Model');
+		$this->User->id = $user['id'];
+		$this->User->saveField('last_action', date('Y-m-d H:i:s'));
+
+        if (isset($this->settings['authorizeAll']) && $this->settings['authorizeAll'])
+            return true;
+
+        if ($user['group_id'] == 5)
+		{
+            return true;
+        }
 
         // get permissions for the role
         $permClass = new OfumPermission();

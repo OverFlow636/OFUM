@@ -46,7 +46,7 @@ class UsersController extends OfumAppController
 		if ($this->request->isPost())
 		{
 			$this->request->data['User']['group_id'] = 1;
-			
+
 			//fire before validate event
 			if ($this->User->saveAll($this->request->data, array('validate'=>'only')))
 			{
