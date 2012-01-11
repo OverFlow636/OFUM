@@ -57,7 +57,7 @@ class Group extends OfumAppModel
 			'foreignKey' => 'parent_id'
 		),
 		'User',
-		'OFUMPermission'
+		'OfumPermission'
 	);
 
 }

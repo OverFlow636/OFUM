@@ -3,14 +3,10 @@
 App::uses('AppController', 'Controller');
 class OfumAppController extends AppController
 {
-	public $components = array(
-		'Session',
-		'Auth'
-	);
-	
+
     public function beforeFilter()
 	{
-        //Configure::load('OFUM.usermin');
+        Configure::load('Ofum.ofum');
 
 		parent::beforeFilter();
     }
