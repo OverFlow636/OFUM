@@ -1,7 +1,7 @@
 <?php
 
 App::uses('AppModel', 'Model');
-class OFUMAppModel extends AppModel
+class OfumAppModel extends AppModel
 {
 
 }

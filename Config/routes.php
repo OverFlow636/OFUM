@@ -7,7 +7,6 @@ Router::connect('/logout', array('plugin' => 'OFUM', 'controller' => 'Users', 'a
 Router::connect('/register', array('plugin' => 'OFUM', 'controller' => 'Users', 'action' => 'register'));
 
 
-Router::connect('/users', array('plugin'=>'OFUM', 'controller'=>'Users'));
-Router::connect('/users/:action/*', array('plugin'=>'OFUM', 'controller'=>'Users'));
+
 
 //Router::connect('/dashboard', array('plugin' => 'usermin', 'controller' => 'umdashboard', 'action' => 'index'));

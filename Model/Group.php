@@ -1,5 +1,5 @@
 <?php
-App::uses('OFUMAppModel', 'OFUM.Model');
+App::uses('OfumAppModel', 'Ofum.Model');
 /**
  * Group Model
  *
@@ -7,7 +7,7 @@ App::uses('OFUMAppModel', 'OFUM.Model');
  * @property Group $ChildGroup
  * @property User $User
  */
-class Group extends OFUMAppModel
+class Group extends OfumAppModel
 {
 
 	public $validate = array(

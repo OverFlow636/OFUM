@@ -1,7 +1,7 @@
 <?php
 
-App::uses('AppModel', 'Model');
-class User extends AppModel
+App::uses('OfumAppModel', 'Ofum.Model');
+class User extends OfumAppModel
 {
 
 	public function __construct()

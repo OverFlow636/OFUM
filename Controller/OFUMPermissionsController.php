@@ -1,7 +1,7 @@
 <?php
 
-App::uses('OFUMAppController', 'OFUM.Controller');
-class OFUMPermissioinsController extends OFUMAppController
+App::uses('OfumAppController', 'Ofum.Controller');
+class OfumPermissioinsController extends OfumAppController
 {
 	
 }

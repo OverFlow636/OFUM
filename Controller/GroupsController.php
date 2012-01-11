@@ -1,6 +1,6 @@
 <?php
 
-App::uses('OFUMAppController', 'OFUM.Controller');
-class GroupsController extends OFUMAppController
+App::uses('OfumAppController', 'Ofum.Controller');
+class GroupsController extends OfumAppController
 {
 }

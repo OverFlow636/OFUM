@@ -1,7 +1,7 @@
 <?php
 
-App::uses('OFUMAppController', 'OFUM.Controller');
-class UsersController extends OFUMAppController
+App::uses('OfumAppController', 'Ofum.Controller');
+class UsersController extends OfumAppController
 {
     public function beforeFilter()
 	{
