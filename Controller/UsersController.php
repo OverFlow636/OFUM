@@ -59,8 +59,6 @@ class UsersController extends OfumAppController
 			}
 		}
 
-
-
 	}
 
 
