@@ -5,18 +5,19 @@
 
   The main reasons I wanted to start a new plugin versus use one of the existing ones are as follows.
 
-  * I wanted a completly generic plugin, no application specific code should be in the plugin. Therefore the plugin can be dropped into *any* application and just work.
-  * I wanted to be able to configure basic options like use username or email for auth.
-  * I wanted permissions bundled with the plugin with inheritence.
+  * I want a completly generic plugin, no application specific code should be in the plugin. Therefore the plugin can be dropped into *any* application and just work.
+  * I want the user model to still have relationships to other models in the parent application.
+  * I want to be able to configure basic options like use username or email for auth.
+  * I want permissions bundled with the plugin with inheritance.
 
   The plugin is written to make replacing your existing user management system as easily as possible.
 
-## Features
+## Main Features
 
   * User table completely configurable, no default fields other than id, (username or email), password, and group_id
-  * Ability to configure the relationiships for the included user model, without changing the plugins code!
+  * Ability to configure the relationships for the included user model, without changing the plugins code!
   * Basic and admin views included, but overwriting at least the basic views is recommended
-  * Many many events called in the user model and controller so that the main application can acccess any required data
+  * Many many events called in the user model and controller so that the main application can access any required data
 
 ## To Install
 

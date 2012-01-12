@@ -17,8 +17,11 @@ class UsersController extends OfumAppController
 			if ($this->Auth->login())
 			{
 				$this->User->id = $this->Auth->user('id');
-				$this->User->saveField('last_login', date('Y-m-d H:i:s'));
-				$this->User->saveField('last_action', date('Y-m-d H:i:s'));
+				if (Configure::read('Ofum.trackLastLogin'))
+					$this->User->saveField('last_login', date('Y-m-d H:i:s'));
+
+				if (Configure::read('Ofum.trackLastAction'))
+					$this->User->saveField('last_action', date('Y-m-d H:i:s'));
 
 				$this->redirect($this->Auth->redirect());
 			} else {

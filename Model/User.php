@@ -13,21 +13,21 @@ class User extends OfumAppModel
 
 	public function __construct()
 	{
-		$bts = Configure::read('OFUM.UserModel.belongsTo');
+		$bts = Configure::read('Ofum.UserModel.belongsTo');
 		if (!empty($bts))
 			foreach($bts as $bt)
 				$this->belongsTo[] = $bt;
 
-		$hms = Configure::read('OFUM.UserModel.hasMany');
+		$hms = Configure::read('Ofum.UserModel.hasMany');
 		if (!empty($hms))
 			foreach($hms as $hm)
 				$this->hasMany[] = $hm;
 
-		$v = Configure::read('OFUM.UserModel.validate');
+		$v = Configure::read('Ofum.UserModel.validate');
 		if (!empty($v))
 			$this->validate = $v;
 
-		$vf = Configure::read('OFUM.UserModel.virtualFields');
+		$vf = Configure::read('Ofum.UserModel.virtualFields');
 		if (!empty($vf))
 			$this->virtualFields = $vf;
 
