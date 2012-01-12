@@ -24,7 +24,8 @@
   * run the sql in the `config/schema` dir
   * load the plugin in your bootstrap
   * In your AppController's $components variable add
-	`'Auth'=>array(
+
+	'Auth'=>array(
 		'loginAction' => array(
 			'plugin' => 'ofum',
 			'controller' => 'Users',
@@ -38,7 +39,7 @@
 				'userModel' => 'Ofum.User'
 			)
 		)
-	)`
+	)
 
 ## To Contribute
 
