@@ -25,6 +25,7 @@
   * load the plugin in your bootstrap
   * In your AppController's $components variable add
 
+--
 	'Auth'=>array(
 		'loginAction' => array(
 			'plugin' => 'ofum',
@@ -40,6 +41,7 @@
 			)
 		)
 	)
+--
 
 ## To Contribute
 
