@@ -4,6 +4,7 @@
   The plugin is in its early states, but is also already in use for one the sites I run.
 
   The main reasons I wanted to start a new plugin versus use one of the existing ones are as follows.
+
   * I wanted a completly generic plugin, no application specific code should be in the plugin. Therefore the plugin can be dropped into *any* application and just work.
   * I wanted to be able to configure basic options like use username or email for auth.
   * I wanted permissions bundled with the plugin with inheritence.
@@ -23,7 +24,7 @@
   * run the sql in the `config/schema` dir
   * load the plugin in your bootstrap
   * In your AppController's $components variable add
-	'Auth'=>array(
+	`'Auth'=>array(
 		'loginAction' => array(
 			'plugin' => 'ofum',
 			'controller' => 'Users',
@@ -37,7 +38,7 @@
 				'userModel' => 'Ofum.User'
 			)
 		)
-	)
+	)`
 
 ## To Contribute
 
