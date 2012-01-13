@@ -44,7 +44,7 @@ h1 span { display: none; }
 	height: 37px;
 	padding: 6px;
 	margin: 0 0 30px 0;
-	background: url(../img/top-menu-bg.gif) no-repeat left top; 
+	background: url(../img/top-menu-bg.gif) no-repeat left top;
 	/* We used a background image making the thick border and the thin one to keep the html structure simple */
 }
 
@@ -163,7 +163,7 @@ h3 {
 
 #main table {
 	border-top: 1px solid #ddd;
-	width: 700px;
+	width: 100%;
 }
 
 #main table tr th {
@@ -253,7 +253,7 @@ h3 {
 	margin: 0 10px 0 0;
 }
 
-#main fieldset .text-long:focus, 
+#main fieldset .text-long:focus,
 #main fieldset .text-medium:focus,
 #main fieldset .text-small:focus,
 #main fieldset textarea:focus { background: #fdfcf6 url(../img/input-shaddow-hover.gif) no-repeat left top; }

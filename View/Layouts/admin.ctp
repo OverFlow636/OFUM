@@ -6,7 +6,7 @@
 
 	<?php
 	echo $this->Html->css('/ofum/css/transdmin');
-	
+
 	echo $this->Html->script('/ofum/js/jquery');
 	echo $this->Html->script('/ofum/js/jNice');
 	?>
@@ -15,31 +15,31 @@
 <body>
 	<div id="wrapper">
     	<!-- h1 tag stays for the logo, you can use the a tag for linking the index page -->
-    	<h1><a href="#"><span>Transdmin Light</span></a></h1>
-        
+    	<h1><a href="/admin/ofum/users"><span>Transdmin Light</span></a></h1>
+
         <!-- You can name the links with lowercase, they will be transformed to uppercase by CSS, we prefered to name them with uppercase to have the same effect with disabled stylesheet -->
 		<?php echo $this->element('nav'); ?>
         <!-- // #end mainNav -->
-        
+
         <div id="containerHolder">
 			<div id="container">
-				
+
         		<div id="sidebar">
 					<?php echo $this->fetch('sidebar'); ?>
-                </div>    
-                
+                </div>
+
                 <h2>
 					<?php echo $this->fetch('breadcrumbs'); ?>
 				</h2>
-                
+
                 <div id="main">
                 	<?php echo $this->fetch('content'); ?>
                 </div>
-                
+
                 <div class="clear"></div>
             </div>
-        </div>	
-        
+        </div>
+
         <p id="footer">OverFlow636's User Management CakePhp Plugin. <a href="http://github.com/overflow636/ofum">Ofum</a>.</p>
     </div>
     <!-- // #wrapper -->
@@ -49,12 +49,12 @@
 <?php
 
 /*
- * 
+ *
 <body>
 	<div id="wrapper">
     	<!-- h1 tag stays for the logo, you can use the a tag for linking the index page -->
     	<h1><a href="#"><span>Transdmin Light</span></a></h1>
-        
+
         <!-- You can name the links with lowercase, they will be transformed to uppercase by CSS, we prefered to name them with uppercase to have the same effect with disabled stylesheet -->
         <ul id="mainNav">
         	<li><a href="#" class="active">DASHBOARD</a></li> <!-- Use the "active" class for the active menu item  -->
@@ -64,7 +64,7 @@
         	<li class="logout"><a href="#">LOGOUT</a></li>
         </ul>
         <!-- // #end mainNav -->
-        
+
         <div id="containerHolder">
 			<div id="container">
         		<div id="sidebar">
@@ -77,12 +77,12 @@
                     	<li><a href="#">Events</a></li>
                     </ul>
                     <!-- // .sideNav -->
-                </div>    
+                </div>
                 <!-- // #sidebar -->
-                
+
                 <!-- h2 stays for breadcrumbs -->
                 <h2><a href="#">Dashboard</a> &raquo; <a href="#" class="active">Print resources</a></h2>
-                
+
                 <div id="main">
                 	<form action="" class="jNice">
 					<h3>Sample section</h3>
@@ -90,23 +90,23 @@
 							<tr>
                                 <td>Vivamus rutrum nibh in felis tristique vulputate</td>
                                 <td class="action"><a href="#" class="view">View</a><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
-                            </tr>                        
+                            </tr>
 							<tr class="odd">
                                 <td>Duis adipiscing lorem iaculis nunc</td>
                                 <td class="action"><a href="#" class="view">View</a><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
-                            </tr>                        
+                            </tr>
 							<tr>
                                 <td>Donec sit amet nisi ac magna varius tempus</td>
                                 <td class="action"><a href="#" class="view">View</a><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
-                            </tr>                        
+                            </tr>
 							<tr class="odd">
                                 <td>Duis ultricies laoreet felis</td>
                                 <td class="action"><a href="#" class="view">View</a><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
-                            </tr>                        
+                            </tr>
 							<tr>
                                 <td>Vivamus rutrum nibh in felis tristique vulputate</td>
                                 <td class="action"><a href="#" class="view">View</a><a href="#" class="edit">Edit</a><a href="#" class="delete">Delete</a></td>
-                            </tr>                        
+                            </tr>
                         </table>
 					<h3>Another section</h3>
                     	<fieldset>
@@ -128,13 +128,13 @@
                     </form>
                 </div>
                 <!-- // #main -->
-                
+
                 <div class="clear"></div>
             </div>
             <!-- // #container -->
-        </div>	
+        </div>
         <!-- // #containerHolder -->
-        
+
         <p id="footer">Feel free to use and customize it. <a href="http://www.perspectived.com">Credit is appreciated.</a></p>
     </div>
     <!-- // #wrapper -->
