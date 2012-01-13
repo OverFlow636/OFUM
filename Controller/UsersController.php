@@ -41,7 +41,7 @@ class UsersController extends OfumAppController
 
 	//crud functions
 
-	public function indexx()
+	public function index()
 	{
 		$this->set('users', $this->paginate());
 	}
@@ -52,18 +52,28 @@ class UsersController extends OfumAppController
 		{
 			$this->request->data['User']['group_id'] = 1;
 
-			$this->getEventManager()->dispatch(new CakeEvent('Plugin.Ofum.register_beforeValidate', $this));
+			$this->fire('Plugin.Ofum.register_beforeValidate');
 			if ($this->User->saveAll($this->request->data, array('validate'=>'only')))
 			{
-				$this->getEventManager()->dispatch(new CakeEvent('Plugin.Ofum.register_afterValidate', $this));
+				$this->fire('Plugin.Ofum.register_afterValidate');
 
-				$this->getEventManager()->dispatch(new CakeEvent('Plugin.Ofum.register_beforeSaveAll', $this));
+				$this->fire('Plugin.Ofum.register_beforeSaveAll');
 				$this->User->saveAll($this->request->data);
 				$this->request->data['User']['id'] = $this->User->getLastInsertId();
-				$this->getEventManager()->dispatch(new CakeEvent('Plugin.Ofum.register_afterSaveAll', $this));
+				$this->fire('Plugin.Ofum.register_afterSaveAll');
+
+				$this->redirect(Configure::read('Ofum.registerRedirect'));
 			}
 		}
 
+	}
+
+	public function view($id = null)
+	{
+		if ($id == null || $id != $this->Auth->user('id'))
+			$id = $this->Auth->user('id');
+
+		$this->set('user', $this->User->read(null, $id));
 	}
 
 
@@ -86,5 +96,16 @@ class UsersController extends OfumAppController
 			throw new NotFoundException(__('Invalid user'));
 
 		$this->set('user', $this->User->read(null, $id));
+	}
+
+	public function admin_view_pr($id = null)
+	{
+		$this->set('user', $this->User->read(null, $id));
+	}
+
+
+	private function fire($event)
+	{
+		$this->getEventManager()->dispatch(new CakeEvent($event, $this));
 	}
 }
