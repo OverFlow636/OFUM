@@ -61,5 +61,13 @@ class UsersController extends OfumAppController
 
 	}
 
-
+	
+	
+	
+	
+	
+	public function admin_index()
+	{
+		$this->set('users', $this->paginate());
+	}
 }

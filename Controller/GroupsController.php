@@ -93,7 +93,7 @@ class GroupsController extends OfumAppController
 	*
 	* @return void
 	*/
-	public function staff_index() {
+	public function admin_index() {
 	$this->Group->recursive = 0;
 	$this->set('groups', $this->paginate());
 	}
@@ -104,7 +104,7 @@ class GroupsController extends OfumAppController
 	* @param string $id
 	* @return void
 	*/
-	public function staff_view($id = null) {
+	public function admin_view($id = null) {
 	$this->Group->id = $id;
 	if (!$this->Group->exists()) {
 	throw new NotFoundException(__('Invalid group'));
@@ -117,7 +117,7 @@ class GroupsController extends OfumAppController
 	*
 	* @return void
 	*/
-	public function staff_add() {
+	public function admin_add() {
 	if ($this->request->is('post')) {
 	$this->Group->create();
 	if ($this->Group->save($this->request->data)) {
@@ -133,7 +133,7 @@ class GroupsController extends OfumAppController
 	* @param string $id
 	* @return void
 	*/
-	public function staff_edit($id = null) {
+	public function admin_edit($id = null) {
 	$this->Group->id = $id;
 	if (!$this->Group->exists()) {
 	throw new NotFoundException(__('Invalid group'));
@@ -154,7 +154,7 @@ class GroupsController extends OfumAppController
 	* @param string $id
 	* @return void
 	*/
-	public function staff_delete($id = null) {
+	public function admin_delete($id = null) {
 	if (!$this->request->is('post')) {
 	throw new MethodNotAllowedException();
 	}
