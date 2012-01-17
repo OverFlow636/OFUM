@@ -5,14 +5,26 @@ App::uses('OfumAppModel', 'Ofum.Model');
  *
  * @property Group $ParentGroup
  * @property Group $ChildGroup
+ * @property OfumPermission $OfumPermission
  * @property User $User
  */
 class Group extends OfumAppModel
 {
+
 	public $actsAs = array(
 		'Tree'
 	);
-	
+
+	public function test()
+	{
+		die('success');
+	}
+
+/**
+ * Validation rules
+ *
+ * @var array
+ */
 	public $validate = array(
 		'name' => array(
 			'notempty' => array(
@@ -46,21 +58,35 @@ class Group extends OfumAppModel
 		),
 	);
 
+	//The Associations below have been created with all possible keys, those that are not needed can be removed
+
+/**
+ * belongsTo associations
+ *
+ * @var array
+ */
 	public $belongsTo = array(
 		'ParentGroup' => array(
-			'className' => 'Group',
-			'foreignKey' => 'parent_id'
+			'className' => 'Ofum.Group',
+			'foreignKey' => 'parent_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
 
-
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
 	public $hasMany = array(
 		'ChildGroup' => array(
-			'className' => 'Group',
-			'foreignKey' => 'parent_id'
+			'className' => 'Ofum.Group',
+			'foreignKey' => 'parent_id',
 		),
-		'User',
-		'OfumPermission'
+		'OfumPermission',
+		'User'
 	);
 
 }

@@ -33,7 +33,10 @@
 				</h2>
 
                 <div id="main">
-                	<?php echo $this->fetch('content'); ?>
+                	<?php
+					echo $this->Session->flash();
+					echo $this->fetch('content');
+					?>
                 </div>
 
                 <div class="clear"></div>

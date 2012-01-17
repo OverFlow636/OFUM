@@ -17,12 +17,26 @@ class User extends OfumAppModel
 		foreach($modelVars as $var => $value)
 			$this->$var = $value;
 
-		$this->belongsTo[] = 'Group';
+		$this->belongsTo[] = 'Ofum.Group';
+		$this->actsAs[] = 'Containable';
 		parent::__construct();
 	}
 
 	public $virtualFields = array(
 		'name' => 'CONCAT(User.first_name," ",User.last_name)'
 	);
+
+	function identical($field = array(), $compare_field=null )
+	{
+		foreach($field as $idx => $value)
+		{
+			if ($value !== $this->data[$this->alias][$compare_field])
+				return false;
+			else
+				continue;
+		}
+		return true;
+	}
+
 
 }

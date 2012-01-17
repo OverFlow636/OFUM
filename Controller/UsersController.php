@@ -68,12 +68,20 @@ class UsersController extends OfumAppController
 
 	}
 
-	public function view($id = null)
+	public function view($id = null, $renderView = null)
 	{
 		if ($id == null || $id != $this->Auth->user('id'))
 			$id = $this->Auth->user('id');
 
+		$this->fire('Plugin.Ofum.view_beforeRead');
+
 		$this->set('user', $this->User->read(null, $id));
+
+		if ($renderView)
+		{
+			$this->set('renderView', $renderView);
+			$this->render('pages'.DIRECTORY_SEPARATOR.$renderView);
+		}
 	}
 
 
