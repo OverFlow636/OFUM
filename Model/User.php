@@ -22,10 +22,6 @@ class User extends OfumAppModel
 		parent::__construct();
 	}
 
-	public $virtualFields = array(
-		'name' => 'CONCAT(User.first_name," ",User.last_name)'
-	);
-
 	function identical($field = array(), $compare_field=null )
 	{
 		foreach($field as $idx => $value)

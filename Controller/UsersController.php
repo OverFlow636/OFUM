@@ -111,9 +111,4 @@ class UsersController extends OfumAppController
 		$this->set('user', $this->User->read(null, $id));
 	}
 
-
-	private function fire($event)
-	{
-		$this->getEventManager()->dispatch(new CakeEvent($event, $this));
-	}
 }
