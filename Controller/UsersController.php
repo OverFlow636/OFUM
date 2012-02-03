@@ -11,11 +11,15 @@ class UsersController extends OfumAppController
         $this->Auth->allow('login', 'logout', 'register');
     }
 
+	public function admin_login()
+	{
+		$this->login();
+		$this->render('admin_login');
+	}
 	public function login()
 	{
 		if ($this->request->isPost())
 		{
-			//die(pr($this->request->data));
 			if ($this->Auth->login())
 			{
 				$this->User->id = $this->Auth->user('id');
