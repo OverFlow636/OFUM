@@ -14,10 +14,16 @@ class User extends OfumAppModel
 	public function __construct()
 	{
 		$modelVars = Configure::read('Ofum.UserModel');
-		foreach($modelVars as $var => $value)
-			$this->$var = $value;
+		if (!empty($modelVars))
+			foreach($modelVars as $var => $value)
+				$this->$var = $value;
 
-		$this->belongsTo[] = 'Ofum.Group';
+		if (Configure::read('Ofum.useGroups'))
+		{
+			die('using grps');
+			$this->belongsTo[] = 'Ofum.Group';
+		}
+
 		$this->actsAs[] = 'Containable';
 		parent::__construct();
 	}

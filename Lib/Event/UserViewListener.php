@@ -12,7 +12,7 @@ class UserViewListener implements CakeEventListener
 
 	public function viewBeforeRead($event)
 	{
-		$event->subject->User->contain(array(
+		/*$event->subject->User->contain(array(
 			'Attending.Course.CourseType',
 			'Attending.Course.Status',
 			'Attending.Conference',
@@ -23,6 +23,6 @@ class UserViewListener implements CakeEventListener
 			'Instructing.Course.CourseType',
 			'Instructing.Course.Status',
 			'Instructing.Status',
-		));
+		));*/
 	}
 }
