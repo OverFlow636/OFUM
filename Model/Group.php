@@ -85,8 +85,8 @@ class Group extends OfumAppModel
 			'className' => 'Ofum.Group',
 			'foreignKey' => 'parent_id',
 		),
-		'OfumPermission',
-		'User'
+		'Ofum.OfumPermission',
+		'Ofum.User'
 	);
 
 }

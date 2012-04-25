@@ -4,11 +4,38 @@ App::uses('OfumAppModel', 'Ofum.Model');
 class User extends OfumAppModel
 {
 
+	public $belongsTo = array(
+		'Agency'
+	);
+
+	public $hasOne = array(
+		'Phone',
+		'Ofcm.Instructor'
+	);
+
+	public $hasMany = array(
+		'Ofcm.Attending',
+		'Ofcm.Contact',
+		'CourseRequest',
+		'GenericTrack',
+		'LineItem',
+		'Location',
+		'Note',
+		'Payment',
+		'TeleformData'
+	);
+
 	public function beforeSave()
 	{
 		if (isset($this->data[$this->alias]['password']))
             $this->data[$this->alias]['password'] = AuthComponent::password($this->data[$this->alias]['password']);
         return true;
+	}
+
+	public function beforeFind()
+	{
+		$this->virtualFields['name'] = 'CONCAT('.$this->alias.'.first_name," ",'.$this->alias.'.last_name)';
+		return true;
 	}
 
 	public function __construct()

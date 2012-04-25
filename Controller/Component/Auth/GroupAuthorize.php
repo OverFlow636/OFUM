@@ -28,22 +28,27 @@ class GroupAuthorize extends BaseAuthorize
             return true;
 
         $permClass = new OfumPermission();
-		//TODO: pull permissions of all parents up the tree
-        $perms = $permClass->find('all', array(
-			'conditions' => array(
-				'group_id' => $user['group_id']
-			)
-		));
-		$action = Router::parse($request->here(false));
-        foreach ($perms as $perm)
+		$userGroupTree = $permClass->Group->getPath($user['group_id'], array('id'));
+
+		foreach($userGroupTree as $group)
 		{
-            if ($perm['OfumPermission']['plugin']		== '*' || (strtoupper($action['plugin'])		== strtoupper($perm['OfumPermission']['plugin'])) &&
-                $perm['OfumPermission']['controller']	== '*' || (strtoupper($action['controller'])	== strtoupper($perm['OfumPermission']['controller'])) &&
-                $perm['OfumPermission']['action']		== '*' || (strtoupper($action['action'])		== strtoupper($perm['OfumPermission']['action'])))
+			$perms = $permClass->find('all', array(
+				'conditions' => array(
+					'group_id' => $group['Group']['id']
+				)
+			));
+
+			$action = Router::parse($request->here(false));
+			foreach ($perms as $perm)
 			{
-                return ($perm['OfumPermission']['allowed'] == 1);
-            }
-        }
+				if ($perm['OfumPermission']['plugin']		== '*' || (strtoupper($action['plugin'])		== strtoupper($perm['OfumPermission']['plugin'])) &&
+					$perm['OfumPermission']['controller']	== '*' || (strtoupper($action['controller'])	== strtoupper($perm['OfumPermission']['controller'])) &&
+					$perm['OfumPermission']['action']		== '*' || (strtoupper($action['action'])		== strtoupper($perm['OfumPermission']['action'])))
+				{
+					return ($perm['OfumPermission']['allowed'] == 1);
+				}
+			}
+		}
 
         return false;
     }

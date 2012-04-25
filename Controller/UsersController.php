@@ -16,6 +16,7 @@ class UsersController extends OfumAppController
 		$this->login();
 		$this->render('admin_login');
 	}
+
 	public function login()
 	{
 		if ($this->request->isPost())
@@ -85,12 +86,18 @@ class UsersController extends OfumAppController
 		{
 			$renderView=strtolower($renderView);
 			$this->set('renderView', $renderView);
-			$this->render('pages'.DIRECTORY_SEPARATOR.$renderView);
+			$this->render('Users'.DS.'pages'.DS.$renderView);
 		}
 	}
 
 
+	public function instructor_view($id = null)
+	{
+		if ($id == null)
+			$id = $this->Auth->user('id');
 
+		$this->set('user', $this->User->read(null, $id));
+	}
 
 
 
@@ -108,14 +115,9 @@ class UsersController extends OfumAppController
 		if (!$this->User->exists())
 			throw new NotFoundException(__('Invalid user'));
 
+		$this->fire('Plugin.Ofum.admin_view_beforeRead');
 		$this->set('user', $this->User->read(null, $id));
 	}
-
-	public function admin_view_pr($id = null)
-	{
-		$this->set('user', $this->User->read(null, $id));
-	}
-
 
 	public function admin_dataTable($type='admin_index')
 	{
@@ -178,15 +180,19 @@ class UsersController extends OfumAppController
 		if (!empty($_GET['sSearch']))
 		{
 			$or = array();
-			//$or[] = array('Course.location_description LIKE'=>$_GET['sSearch'].'%');
-			//$or[] = array('CourseType.shortname LIKE'=>$_GET['sSearch'].'%');
-			//$or[] = array('DATE_FORMAT(Course.startdate, "%M") LIKE'=>$_GET['sSearch'].'%');
-			//$or[] = array('Course.id'=>$_GET['sSearch']);
-
-			//$conditions[] = array('or'=>$or);
+			$or[] = array('User.first_name LIKE'=>$_GET['sSearch'].'%');
+			$or[] = array('User.last_name LIKE'=>$_GET['sSearch'].'%');
+			$or[] = array('User.email LIKE'=>$_GET['sSearch'].'%');
+			$or[] = array('User.pid LIKE'=>$_GET['sSearch'].'%');
+			$or[] = array('User.ssid LIKE'=>$_GET['sSearch'].'%');
+			$or[] = array('Agency.name LIKE'=>$_GET['sSearch'].'%');
+			$conditions[] = array('or'=>$or);
 		}
 
 		$this->User->recursive = 1;
+		$this->User->contain(array(
+			'Agency'
+		));
 		$found = $this->User->find('count', array(
 			'conditions'=>$conditions
 		));
@@ -204,6 +210,6 @@ class UsersController extends OfumAppController
 
 		$this->set('found', $found);
 		$this->set('users', $courses);
-		$this->render('tables'.DS.$type);
+		$this->render('Users/tables'.DS.$type);
 	}
 }

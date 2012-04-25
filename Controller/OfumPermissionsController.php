@@ -11,6 +11,7 @@ class OfumPermissionsController extends OfumAppController
 
 	function admin_index()
 	{
+		$this->OfumPermission->recursive = 1;
 		$this->set('perms', $this->paginate());
 	}
 
@@ -105,7 +106,6 @@ class OfumPermissionsController extends OfumAppController
 
 		$controllers = array_merge(array('*'=>'*'), $controllers);
 		$actions = array_merge(array('*'=>'*'), $actions);
-
 
 		$this->set('plugins', $plugins);
 		$this->set('controllers', $controllers);

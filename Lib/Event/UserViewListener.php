@@ -6,13 +6,14 @@ class UserViewListener implements CakeEventListener
 	public function implementedEvents()
 	{
 		return array(
-			'Plugin.Ofum.view_beforeRead'	=> 'viewBeforeRead'
+			'Plugin.Ofum.view_beforeRead'	=> 'viewBeforeRead',
+			'Plugin.Ofum.admin_view_beforeRead'	=> 'adminViewBeforeRead'
 		);
 	}
 
 	public function viewBeforeRead($event)
 	{
-		/*$event->subject->User->contain(array(
+		$event->subject->User->contain(array(
 			'Attending.Course.CourseType',
 			'Attending.Course.Status',
 			'Attending.Conference',
@@ -20,9 +21,28 @@ class UserViewListener implements CakeEventListener
 			'Attending.Status',
 			'Attending.User',
 			'Payment.Status',
-			'Instructing.Course.CourseType',
-			'Instructing.Course.Status',
-			'Instructing.Status',
-		));*/
+			'Instructor.Instructing.Course.CourseType',
+			'Instructor.Instructing.Course.Status',
+			'Instructor.Instructing.Status',
+			'Agency',
+			'Location',
+			'Phone'
+		));
+	}
+
+	public function adminViewBeforeRead($event)
+	{
+		$event->subject->User->contain(array(
+			'Attending.Course.CourseType',
+			'Attending.Course.Status',
+			'Attending.Conference',
+			'Attending.Payment',
+			'Attending.Status',
+			'Attending.User',
+			'Payment.Status',
+			'Instructor.Instructing.Course.CourseType',
+			'Instructor.Instructing.Course.Status',
+			'Instructor.Instructing.Status'
+		));
 	}
 }

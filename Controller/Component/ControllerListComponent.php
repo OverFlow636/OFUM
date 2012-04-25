@@ -5,7 +5,7 @@ class ControllerListComponent extends Component
 {
 	function getPluginList()
 	{
-		return App::objects('Plugins');
+		return App::objects('plugin');
 	}
 
 	function getControllerList($plugin = null)
@@ -29,7 +29,13 @@ class ControllerListComponent extends Component
 				if ($v[0] == '_')
 					unset($actions[$k]);
 			$parentActions = get_class_methods('AppController');
-			return array_diff($actions, $parentActions);
+			$ret =  array_diff($actions, $parentActions);
+
+			$vars = get_class_vars($controller);
+			if (!empty($vars['allowedActions']))
+				$ret = array_diff($ret, $vars['allowedActions']);
+			
+			return $ret;
 		}
 		return false;
 	}
