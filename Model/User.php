@@ -5,7 +5,8 @@ class User extends OfumAppModel
 {
 
 	public $belongsTo = array(
-		'Agency'
+		'Agency',
+		'Location'
 	);
 
 	public $hasOne = array(

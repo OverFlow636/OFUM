@@ -8,11 +8,18 @@ class UserRegisterListener implements CakeEventListener
 	{
 		return array(
 			'Plugin.Ofum.register_beforeValidate'	=> 'registerBeforeValidate',
+			'Plugin.Ofum.register_beforeSaveAll'	=> 'registerBeforeSaveAll',
 			'Plugin.Ofum.register_afterSaveAll'		=> 'registerAfterSaveAll'
 		);
 	}
 
 	public function registerBeforeValidate($event)
+	{
+		die(pr($event->subject->data));
+
+	}
+
+	public function registerBeforeSaveAll($event)
 	{
 
 
