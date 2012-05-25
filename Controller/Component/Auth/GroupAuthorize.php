@@ -17,9 +17,13 @@ class GroupAuthorize extends BaseAuthorize
      */
     public function authorize($user, CakeRequest $request)
 	{
+		$this->User = ClassRegistry::init('Ofum.User', 'Model');
+		$this->UsersGroup = ClassRegistry::init('Ofum.UsersGroup', 'Model');
+
+		$this->UserGroup = ClassRegistry::init('Ofum.User', 'Model');
+
 		if (Configure::read('Ofum.trackLastAction'))
 		{
-			$this->User = ClassRegistry::init('Ofum.User', 'Model');
 			$this->User->id = $user['id'];
 			$this->User->saveField('last_action', date('Y-m-d H:i:s'));
 		}
@@ -28,7 +32,18 @@ class GroupAuthorize extends BaseAuthorize
             return true;
 
         $permClass = new OfumPermission();
-		$userGroupTree = $permClass->Group->getPath($user['group_id'], array('id'));
+		$grp = $this->UsersGroup->findByUserId($user['id']);
+		if ($grp)
+			$grp = $grp['UsersGroup']['group_id'];
+		else
+		{
+			$this->UsersGroup->save(array(
+				'user_id'=>$user['id'],
+				'group_id'=>1
+			));
+			$grp = 1;
+		}
+		$userGroupTree = $permClass->Group->getPath($grp, array('id'));
 
 		foreach($userGroupTree as $group)
 		{

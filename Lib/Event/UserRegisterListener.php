@@ -15,7 +15,6 @@ class UserRegisterListener implements CakeEventListener
 
 	public function registerBeforeValidate($event)
 	{
-		die(pr($event->subject->data));
 
 	}
 

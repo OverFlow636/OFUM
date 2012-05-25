@@ -6,7 +6,10 @@ class User extends OfumAppModel
 
 	public $belongsTo = array(
 		'Agency',
-		'Location'
+		'HomeAddress'=>array(
+			'className'=>'Location',
+			'foreignKey'=>'home_address'
+		)
 	);
 
 	public $hasOne = array(
@@ -23,7 +26,11 @@ class User extends OfumAppModel
 		'Location',
 		'Note',
 		'Payment',
-		'TeleformData'
+		'TeleformData',
+		'Ofum.UsersGroup',
+		'Ofcm.Instructing',
+		'Message'=>array('foreignKey'=>'to_user_id'),
+		'Post'
 	);
 
 	public function beforeSave()

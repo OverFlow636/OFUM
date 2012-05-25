@@ -3,8 +3,6 @@
 App::uses('OfumAppController', 'Ofum.Controller');
 class UsersController extends OfumAppController
 {
-	public $scaffold = 'admin';
-
     public function beforeFilter()
 	{
         parent::beforeFilter();
@@ -30,6 +28,13 @@ class UsersController extends OfumAppController
 				if (Configure::read('Ofum.trackLastAction'))
 					$this->User->saveField('last_action', date('Y-m-d H:i:s'));
 
+				$data = array(
+					'id'=>$this->User->id,
+					'pass'=>$this->User->field('password')
+				);
+				$this->Cookie->write($this->cookieName, serialize($data), true, '1 year');
+
+
 				$this->redirect($this->Auth->redirect());
 			} else {
 				$this->Session->setFlash(__('Invalid email address or password, try again'), 'notices/error');
@@ -39,12 +44,10 @@ class UsersController extends OfumAppController
 
 	public function logout()
 	{
+		if ($this->Cookie->read($this->cookieName))
+			$this->Cookie->delete($this->cookieName);
 		$this->redirect($this->Auth->logout());
 	}
-
-
-
-	//crud functions
 
 	public function index()
 	{
@@ -55,22 +58,40 @@ class UsersController extends OfumAppController
 	{
 		if ($this->request->isPost())
 		{
-			if (isset($this->request->data['first_name']))
+			if (isset($this->request->data['User']['first_name']))
 			{
-				$this->request->data['User']['group_id'] = 1;
-
 				$this->fire('Plugin.Ofum.register_beforeValidate');
 				if ($this->User->saveAll($this->request->data, array('validate'=>'only')))
 				{
 					$this->fire('Plugin.Ofum.register_afterValidate');
 
+					if (!$this->request->data['Agency']['id'])
+					{
+						$this->User->Agency->save(array(
+							'name'=>$this->request->data['Agency']['name']
+						));
+						$this->request->data['Agency']['id'] = $this->User->Agency->getLastInsertId();
+					}
+
 					$this->fire('Plugin.Ofum.register_beforeSaveAll');
 					$this->User->saveAll($this->request->data);
 					$this->request->data['User']['id'] = $this->User->getLastInsertId();
+
+					$this->User->UsersGroup->save(array(
+						'user_id'=>$this->request->data['User']['id'],
+						'group_id'=>1
+					));
+
+					$loc = $this->User->Location->findByUserId($this->request->data['User']['id']);
+					if ($loc)
+						$this->User->saveField('location_id', $loc['Location']['id']);
+
 					$this->fire('Plugin.Ofum.register_afterSaveAll');
 
+					$this->Session->setFlash('You have successfully registered, please login below.', 'notices/success');
 					$this->redirect(Configure::read('Ofum.registerRedirect'));
 				}
+
 			}
 			elseif (isset($this->request->data['User']['email']))
 			{
@@ -183,6 +204,32 @@ class UsersController extends OfumAppController
 		}
 	}
 
+	public function edit($id = null)
+	{
+		if ($id == null || $id != $this->Auth->user('id'))
+			$id = $this->Auth->user('id');
+
+		$user = $this->User->read(null, $id);
+		$this->set('user', $user);
+
+		if ($this->request->is('post') || $this->request->is('put'))
+		{
+			$this->User->create();
+			if ($this->User->save($this->request->data))
+			{
+				$this->Session->setFlash('Successfully updated account details', 'notices/success');
+				$this->redirect(array('action'=>'view', $id, 'account'));
+			}
+			else
+				$this->Session->setFlash('Please correct the errors below to continue', 'notices/error');
+		}
+		else
+		{
+			$this->fire('Plugin.Ofum.view_beforeRead');
+			$this->request->data = $user;
+		}
+	}
+
 	//admin sections
 
 	public function admin_index()
@@ -193,7 +240,7 @@ class UsersController extends OfumAppController
 		$this->set('users', $this->paginate());
 	}
 
-	public function admin_view($id = null)
+	public function admin_view($id = null, $renderView = 'dashboard')
 	{
 		$this->User->id = $id;
 		if (!$this->User->exists())
@@ -201,12 +248,15 @@ class UsersController extends OfumAppController
 
 		$this->fire('Plugin.Ofum.admin_view_beforeRead');
 		$this->set('user', $this->User->read(null, $id));
+
+		$this->render('Users'.DS.'pages'.DS.$renderView);
 	}
 
 	public function admin_dataTable($type='admin_index')
 	{
 		$this->datatable($type);
 	}
+
 	public function dataTable($type='index')
 	{
 		$conditions = array();
@@ -297,6 +347,138 @@ class UsersController extends OfumAppController
 		$this->render('Users/tables'.DS.$type);
 	}
 
+	public function admin_edit($id)
+	{
+		if ($this->request->is('post') || $this->request->is('put'))
+		{
+
+		}
+		else
+		{
+			$this->request->data = $this->User->read(null, $id);
+		}
+	}
+
+	public function admin_setGroup($id)
+	{
+		if ($this->request->is('post') || $this->request->is('put'))
+		{
+			$exist = $this->User->UsersGroup->findByUserId($this->request->data['User']['id']);
+			if ($exist)
+			{
+				$data = array(
+					'id'=>$exist['UsersGroup']['id'],
+					'group_id'=>$this->request->data['UsersGroup'][0]['group_id']
+				);
+				$this->User->UsersGroup->save($data);
+			}
+			else
+			{
+				$data = array(
+					'user_id'=>$this->request->data['User']['id'],
+					'group_id'=>$this->request->data['UsersGroup'][0]['group_id']
+				);
+				$this->User->UsersGroup->save($data);
+			}
+
+			$this->Session->setFlash('Updated Usergroup', 'notices/success');
+			$this->redirect(array('action'=>'view', $id));
+		}
+		else
+		{
+			$this->User->contain(array('UsersGroup'));
+			$this->request->data = $this->User->read(null, $id);
+			$this->loadModel('Group');
+			$this->set('groups', $this->Group->find('list'));
+		}
+	}
+
+	public function admin_findDupes($id)
+	{
+		//on merge will need to update all user_id to the new id in all tables
+		//tables may get duplicates because of this, need to process tables afterwards to check duplicates
+		//	attendings at least, so that the same user will not be in the same class twice
+
+
+
+
+		/*$count = $this->User->find('all', array(
+			'conditions'=>array(
+				'pid != ' =>0
+			),
+			'group'=>'pid having pidcount > 1',
+			'fields'=>array('count(pid) as pidcount', '*')
+		));
+		$this->set('count', count($count));*/
+
+		/*$dups = $this->User->find('first', array(
+			'conditions'=>array(
+				'pid != ' =>0
+			),
+			'group'=>'pid having count(pid) > 1'
+		));
+
+		die(pr($dups));*/
+
+
+
+		//if ($dups) //still duplicates to process
+		//{
+
+		$this->User->contain();
+		$user = $this->User->read(null, $id);
+
+
+		$this->User->contain(array(
+			'Attending',
+			'Instructing',
+			'Instructor',
+			'LineItem',
+			'Payment',
+			'Location',
+			'Contact',
+			'Message',
+			'UsersGroup',
+			'Note',
+			'Post',
+			'TeleformData'
+		));
+
+		$conditions['conditions']= array();
+
+		$ors = array();
+		if ($user['User']['pid'])
+			$ors['pid']=$user['User']['pid'];
+
+		if ($user['User']['ssid'])
+			$ors['ssid']=$user['User']['ssid'];
+
+		$ands = array();
+		if ($user['User']['first_name'] && $user['User']['last_name'])
+			$ands = array(
+				'first_name'=>$user['User']['first_name'],
+				'last_name'=>$user['User']['last_name']
+			);
+
+		if (!empty($ors))
+			$conditions['conditions']['or']=$ors;
+
+		//if (!empty($ands))
+		//	$conditions['conditions']['and']=$ands;
+
+		//die(pr($conditions));
+
+		if (!empty($conditions['conditions']))
+			$this->set('users', $this->User->find('all', $conditions));
+		else
+			$this->set('users', array());
+
+
+		$this->fire('Plugin.Ofum.admin_view_beforeRead');
+		$this->set('user', $this->User->read(null, $id));
+		//}
+
+	}
 
 	//instructor sections
 	public function instructor_view($id = null)
