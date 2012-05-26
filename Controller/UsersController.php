@@ -32,7 +32,7 @@ class UsersController extends OfumAppController
 					'id'=>$this->User->id,
 					'pass'=>$this->User->field('password')
 				);
-				$this->Cookie->write($this->cookieName, $data, true, '1 year');
+				$this->Cookie->write($this->cookieName, serialize($data), false, '1 year');
 
 
 				$this->redirect($this->Auth->redirect());
