@@ -84,7 +84,10 @@ class UsersController extends OfumAppController
 
 					$loc = $this->User->Location->findByUserId($this->request->data['User']['id']);
 					if ($loc)
-						$this->User->saveField('location_id', $loc['Location']['id']);
+						$this->User->save(array(
+						'user_id'=>$this->request->data['User']['id'],
+						'home_address'=> $loc['Location']['id']
+					));
 
 					$this->fire('Plugin.Ofum.register_afterSaveAll');
 
