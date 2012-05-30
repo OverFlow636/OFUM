@@ -57,7 +57,7 @@ class GroupAuthorize extends BaseAuthorize
 			foreach ($perms as $perm)
 			{
 				if ($perm['OfumPermission']['plugin']		== '*' || (strtoupper($action['plugin'])		== strtoupper($perm['OfumPermission']['plugin'])) &&
-					$perm['OfumPermission']['controller']	== '*' || (strtoupper($action['controller'])	== strtoupper($perm['OfumPermission']['controller'])) &&
+					$perm['OfumPermission']['controller']	== '*' || (strtoupper($action['controller'].'Controller')	== strtoupper($perm['OfumPermission']['controller'])) &&
 					$perm['OfumPermission']['action']		== '*' || (strtoupper($action['action'])		== strtoupper($perm['OfumPermission']['action'])))
 				{
 					return ($perm['OfumPermission']['allowed'] == 1);
