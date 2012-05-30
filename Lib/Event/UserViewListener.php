@@ -25,8 +25,7 @@ class UserViewListener implements CakeEventListener
 			'Instructor.Instructing.Course.Status',
 			'Instructor.Instructing.Status',
 			'Agency',
-			'Location',
-			'Phone'
+			'HomeAddress',
 		));
 	}
 

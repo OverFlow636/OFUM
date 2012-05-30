@@ -195,7 +195,43 @@ class UsersController extends OfumAppController
 		if ($id == null || $id != $this->Auth->user('id'))
 			$id = $this->Auth->user('id');
 
-		$this->fire('Plugin.Ofum.view_beforeRead');
+		switch($renderView)
+		{
+			case null:
+			case 'Attended':
+			case 'Conference':
+				$this->User->contain(array(
+					'Attending.Course.CourseType',
+					'Attending.Course.Status',
+					'Attending.Conference',
+					'Attending.Payment',
+					'Attending.Status',
+					'Attending.User',
+				));
+			break;
+
+			case 'Instructed':
+				$this->User->contain(array(
+					'Instructor.Instructing.Course.CourseType',
+					'Instructor.Instructing.Course.Status',
+					'Instructor.Instructing.Status',
+				));
+
+			break;
+
+			case 'Account':
+				$this->User->contain(array(
+					'Agency',
+					'HomeAddress',
+				));
+			break;
+
+			case 'Invoices':
+				$this->User->contain(array(
+					'Payment.Status'
+				));
+			break;
+		}
 
 		$this->set('user', $this->User->read(null, $id));
 
