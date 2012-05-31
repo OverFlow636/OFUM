@@ -576,4 +576,19 @@ class UsersController extends OfumAppController
 		$this->set('currentUser', $currentUser);
 	}
 
+	public function admin_findByEmail($term)
+	{
+		if (!empty($term))
+		{
+			$this->User->contain(array('Agency'));
+			$this->set('user', $this->User->find('first', array(
+				'conditions'=>array(
+					'User.email'=>$term
+				)
+			)));
+			$this->response->type('ajax');
+		}
+		else
+			$this->set('user', null);
+	}
 }
