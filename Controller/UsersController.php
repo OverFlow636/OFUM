@@ -151,6 +151,12 @@ class UsersController extends OfumAppController
 						if (!empty($exist['User']['dob']))
 							$dob = true;
 
+						if (empty($exist['User']['uuid']))
+							$this->User->save(array(
+								'id'=>$exist['User']['id'],
+								'uuid'=>md5($exist['User']['first_name'].' '.$exist['User']['last_name'].' '.time())
+							));
+
 						if ($ssid || $dob || $pid)
 						{
 							$this->set('ssid', $ssid);
