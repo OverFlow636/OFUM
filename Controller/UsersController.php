@@ -291,16 +291,39 @@ class UsersController extends OfumAppController
 		$this->set('users', $this->paginate());
 	}
 
-	public function admin_view($id = null, $renderView = 'dashboard')
+	public function admin_view($id = null, $renderView =null)
 	{
 		$this->User->id = $id;
 		if (!$this->User->exists())
 			throw new NotFoundException(__('Invalid user'));
 
-		$this->fire('Plugin.Ofum.admin_view_beforeRead');
+		switch($renderView)
+		{
+			default:
+				$this->User->contain(array(
+					'Attending.Course.CourseType',
+					'Attending.Course.Status',
+					'Attending.Conference',
+					'Attending.Payment',
+					'Attending.Status',
+					'Attending.User',
+					'Payment.Status',
+					'Instructor.Instructing.Course.CourseType',
+					'Instructor.Instructing.Course.Status',
+					'Instructor.Instructing.Status',
+					'Agency',
+					'HomeAddress.City',
+					'HomeAddress.State',
+					'UsersGroup.Group'
+				));
+				break;
+		}
+
 		$this->set('user', $this->User->read(null, $id));
 
-		$this->render('Users'.DS.'pages'.DS.$renderView);
+		if ($renderView)
+			$this->render('Users'.DS.'pages'.DS.$renderView);
+
 	}
 
 	public function admin_dataTable($type='admin_index')
@@ -402,11 +425,16 @@ class UsersController extends OfumAppController
 	{
 		if ($this->request->is('post') || $this->request->is('put'))
 		{
-
+			if ($this->User->save($this->request->data))
+			{
+				$this->Session->setFlash('Successfully edited user', 'notices/success');
+				$this->redirect(array('action'=>'view', $id));
+			}
 		}
 		else
 		{
 			$this->request->data = $this->User->read(null, $id);
+
 		}
 	}
 
@@ -419,7 +447,7 @@ class UsersController extends OfumAppController
 			{
 				$data = array(
 					'id'=>$exist['UsersGroup']['id'],
-					'group_id'=>$this->request->data['UsersGroup'][0]['group_id']
+					'group_id'=>$this->request->data['UsersGroup']['group_id']
 				);
 				$this->User->UsersGroup->save($data);
 			}
@@ -427,7 +455,7 @@ class UsersController extends OfumAppController
 			{
 				$data = array(
 					'user_id'=>$this->request->data['User']['id'],
-					'group_id'=>$this->request->data['UsersGroup'][0]['group_id']
+					'group_id'=>$this->request->data['UsersGroup']['group_id']
 				);
 				$this->User->UsersGroup->save($data);
 			}

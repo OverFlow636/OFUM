@@ -14,7 +14,8 @@ class User extends OfumAppModel
 
 	public $hasOne = array(
 		'Phone',
-		'Ofcm.Instructor'
+		'Ofcm.Instructor',
+		'Ofum.UsersGroup',
 	);
 
 	public $hasMany = array(
@@ -27,7 +28,6 @@ class User extends OfumAppModel
 		'Note',
 		'Payment',
 		'TeleformData',
-		'Ofum.UsersGroup',
 		'Ofcm.Instructing',
 		'Message'=>array('foreignKey'=>'to_user_id'),
 		'Post'
