@@ -74,6 +74,10 @@ class UsersController extends OfumAppController
 					}
 
 					$this->fire('Plugin.Ofum.register_beforeSaveAll');
+
+					$result = $this->Usps->process($this->request->data['Location'][0]['addr1'], $this->request->data['Location'][0]['zip5'], $this->request->data['Location'][0]['addr2']);
+					unset($this->request->data['Location']);
+
 					$this->User->saveAll($this->request->data);
 					$this->request->data['User']['id'] = $this->User->getLastInsertId();
 
@@ -82,12 +86,14 @@ class UsersController extends OfumAppController
 						'group_id'=>1
 					));
 
-					$loc = $this->User->Location->findByUserId($this->request->data['User']['id']);
-					if ($loc)
+					$result['name'] = 'Home Address';
+					$result['user_id'] = $this->request->data['User']['id'];
+					$lid = $this->User->Location->process($result, $this);
+					if ($lid)
 						$this->User->save(array(
-						'user_id'=>$this->request->data['User']['id'],
-						'home_address'=> $loc['Location']['id']
-					));
+							'user_id'		=> $this->request->data['User']['id'],
+							'home_address'	=> $lid
+						));
 
 					$this->fire('Plugin.Ofum.register_afterSaveAll');
 
