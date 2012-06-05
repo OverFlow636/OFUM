@@ -283,12 +283,10 @@ class UsersController extends OfumAppController
 
 	//admin sections
 
-	public function admin_index()
+	public function admin_index($show = 'admin_index', $id = null)
 	{
-		$this->paginate = array(
-			'limit'=>10
-		);
-		$this->set('users', $this->paginate());
+		$this->set('show', $show);
+		$this->set('id', $id);
 	}
 
 	public function admin_view($id = null, $renderView =null)
@@ -326,19 +324,28 @@ class UsersController extends OfumAppController
 
 	}
 
-	public function admin_dataTable($type='admin_index')
+	public function admin_dataTable($type='admin_index', $id=null)
 	{
-		$this->datatable($type);
+		$this->datatable($type, $id);
 	}
 
-	public function dataTable($type='index')
+	public function dataTable($type='index', $id = null)
 	{
 		$conditions = array();
 		switch($type)
 		{
-			case 'upcoming':
-				$conditions[] = 'Course.startdate > NOW()';
-				$conditions[] = array('Course.conference_id'=>0);
+			case 'online':
+				$conditions['User.last_action >'] = date('Y-m-d H:i:s', strtotime('-5 minutes'));
+				$type= 'admin_index';
+			break;
+
+			case 'rtoday':
+				$conditions['User.created >='] = date('Y-m-d H:i:s', strtotime('12:01 am'));
+				$type= 'admin_index';
+			break;
+
+			case 'agency':
+				$conditions['User.agency_id'] = $id;
 			break;
 		}
 
@@ -361,13 +368,13 @@ class UsersController extends OfumAppController
 		{
 			switch ($type)
 			{
-				case 'upcoming':
+				case 'agency':
 					switch($_GET['iSortCol_0'])
 					{
-						case 0: $order = array('Course.startdate'=>$_GET['sSortDir_0']); break;
-						case 1: $order = array('Course.course_type_id'=>$_GET['sSortDir_0']); break;
-						case 2: $order = array('Course.location_description'=>$_GET['sSortDir_0']); break;
-						case 3: $order = array('Course.status_id'=>$_GET['sSortDir_0']); break;
+						case 0: $order = array('User.last_name'=>$_GET['sSortDir_0']); break;
+						case 1: $order = array('User.title'=>$_GET['sSortDir_0']); break;
+						case 2: $order = array('User.last_login'=>$_GET['sSortDir_0']); break;
+						case 3: $order = array('User.created'=>$_GET['sSortDir_0']); break;
 					}
 				break;
 
@@ -390,6 +397,7 @@ class UsersController extends OfumAppController
 			$or = array();
 			$or[] = array('User.first_name LIKE'=>$_GET['sSearch'].'%');
 			$or[] = array('User.last_name LIKE'=>$_GET['sSearch'].'%');
+			$or[] = array('CONCAT(User.first_name, " ", User.last_name) LIKE'=>'%'.$_GET['sSearch'].'%');
 			$or[] = array('User.email LIKE'=>$_GET['sSearch'].'%');
 			$or[] = array('User.pid LIKE'=>$_GET['sSearch'].'%');
 			$or[] = array('User.ssid LIKE'=>$_GET['sSearch'].'%');
