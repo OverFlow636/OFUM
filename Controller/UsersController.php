@@ -623,6 +623,14 @@ class UsersController extends OfumAppController
 
 		$this->set('currentUser', $currentUser);
 	}
+	public function instructor_profile($id = null)
+	{
+		$this->User->contain(array(
+			'Agency',
+			'Instructor.Tier'
+		));
+		$this->set('user', $this->User->read(null, $id));
+	}
 
 	public function admin_findByEmail($term)
 	{
