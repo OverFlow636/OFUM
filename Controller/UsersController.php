@@ -332,8 +332,34 @@ class UsersController extends OfumAppController
 	public function dataTable($type='index', $id = null)
 	{
 		$conditions = array();
+		$joins = array(
+			array(
+				'table'=>'agencies',
+				'alias'=>'Agency',
+				'type'=>'LEFT',
+				'conditions'=>array(
+					'Agency.id = User.agency_id'
+			))
+		);
 		switch($type)
 		{
+			case 'instructor_search':
+				$joins [] =array(
+					'table'=>'instructors',
+					'alias'=>'Instructor',
+					'type'=>'LEFT',
+					'conditions'=>array(
+						'Instructor.user_id = User.id'
+				));
+				$joins [] =array(
+					'table'=>'tiers',
+					'alias'=>'Tier',
+					'type'=>'LEFT',
+					'conditions'=>array(
+						'Tier.id = Instructor.tier_id'
+				));
+			break;
+
 			case 'online':
 				$conditions['User.last_action >'] = date('Y-m-d H:i:s', strtotime('-5 minutes'));
 				$type= 'admin_index';
@@ -368,6 +394,16 @@ class UsersController extends OfumAppController
 		{
 			switch ($type)
 			{
+				case 'instructor_search':
+					switch($_GET['iSortCol_0'])
+					{
+						case 0: break;
+						case 1: $order = array('User.last_name'=>$_GET['sSortDir_0']); break;
+						case 2: $order = array('Agency.name'=>$_GET['sSortDir_0']); break;
+						case 3: $order = array('Tier.id'=>$_GET['sSortDir_0']); break;
+					}
+				break;
+
 				case 'agency':
 					switch($_GET['iSortCol_0'])
 					{
@@ -402,24 +438,27 @@ class UsersController extends OfumAppController
 			$or[] = array('User.pid LIKE'=>$_GET['sSearch'].'%');
 			$or[] = array('User.ssid LIKE'=>$_GET['sSearch'].'%');
 			$or[] = array('Agency.name LIKE'=>$_GET['sSearch'].'%');
+
+			if ($type == 'instructor_search')
+			{
+				$or[] = array('Tier.name LIKE'=>$_GET['sSearch'].'%');
+				$or[] = array('Tier.short'=>$_GET['sSearch']);
+			}
 			$conditions[] = array('or'=>$or);
 		}
 
-		$this->User->recursive = 1;
-		$this->User->contain(array(
-			'Agency'
-		));
+
 		$found = $this->User->find('count', array(
-			'conditions'=>$conditions
-		));
-		$this->User->contain(array(
-			'Agency'
+			'conditions'=>$conditions,
+			'joins'=>$joins
 		));
 		$courses = $this->User->find('all', array(
 			'conditions'=>$conditions,
 			'order'=>$order,
 			'limit'=>$limit,
-			'offset'=>$offset
+			'offset'=>$offset,
+			'joins'=>$joins,
+			'fields'=>'*'
 		));
 
 		//echo "/* ".print_r($order, true).' */';
