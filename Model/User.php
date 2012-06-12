@@ -40,12 +40,6 @@ class User extends OfumAppModel
         return true;
 	}
 
-	public function beforeFind()
-	{
-		$this->virtualFields['name'] = 'CONCAT('.$this->alias.'.first_name," ",'.$this->alias.'.last_name)';
-		return true;
-	}
-
 	public function __construct()
 	{
 		$modelVars = Configure::read('Ofum.UserModel');
@@ -61,6 +55,7 @@ class User extends OfumAppModel
 
 		$this->actsAs[] = 'Containable';
 		parent::__construct();
+		$this->virtualFields['name'] = 'CONCAT('.$this->alias.'.first_name," ",'.$this->alias.'.last_name)';
 	}
 
 	function identical($field = array(), $compare_field=null )
