@@ -40,7 +40,7 @@ class User extends OfumAppModel
         return true;
 	}
 
-	public function __construct()
+	public function __construct($id = false, $table = null, $ds = null)
 	{
 		$modelVars = Configure::read('Ofum.UserModel');
 		if (!empty($modelVars))
@@ -54,7 +54,8 @@ class User extends OfumAppModel
 		}
 
 		$this->actsAs[] = 'Containable';
-		parent::__construct();
+		parent::__construct($id, $table, $ds);
+
 		$this->virtualFields['name'] = 'CONCAT('.$this->alias.'.first_name," ",'.$this->alias.'.last_name)';
 	}
 
