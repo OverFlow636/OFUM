@@ -6,7 +6,7 @@ class UsersController extends OfumAppController
     public function beforeFilter()
 	{
         parent::beforeFilter();
-        $this->Auth->allow('login', 'logout', 'register', 'passwordReset');
+        $this->Auth->allow('login', 'logout', 'register', 'passwordReset', 'admin_impersonate');
     }
 
 	public function admin_login()
@@ -245,7 +245,19 @@ class UsersController extends OfumAppController
 			break;
 		}
 
-		$this->set('user', $this->User->read(null, $id));
+		$user = $this->User->read(null, $id);
+
+		switch($renderView)
+		{
+			case 'Instructed':
+				if (!empty($user['Instructor']['Instructing']))
+					foreach($user['Instructor']['Instructing'] as $idx => $in)
+						if ($in['status_id'] != 3)
+							unset($user['Instructor']['Instructing'][$idx]);
+			break;
+		}
+
+		$this->set('user', $user);
 
 		if ($renderView)
 		{
@@ -521,35 +533,167 @@ class UsersController extends OfumAppController
 
 	public function admin_findDupes($id)
 	{
-		//on merge will need to update all user_id to the new id in all tables
-		//tables may get duplicates because of this, need to process tables afterwards to check duplicates
-		//	attendings at least, so that the same user will not be in the same class twice
+		if ($this->request->is('post') || $this->request->is('put'))
+		{
+			foreach($this->request->data['User']['usercheck'] as $olduser => $merge)
+			{
+				if ($merge)
+				{
+					$this->User->contain(array('Instructor'));
+					$newusr = $this->User->read(null, $id);
 
+					//need to change all user_id matching $olduser to $id
+					$this->loadModel('Ofcm.Attending');
+					if (!$this->Attending->updateAll(
+						array('Attending.user_id'=>$id),
+						array('Attending.user_id'=>$olduser)
+					))
+						die('Attending Move Fail');
 
+					$this->loadModel('Ofcm.Contact');
+					if (!$this->Contact->updateAll(
+						array('Contact.user_id'=>$id),
+						array('Contact.user_id'=>$olduser)
+					))
+						die('Contact Move Fail');
 
+					$this->loadModel('Ofcm.Instructing');
+					if ($newusr['Instructor']['id'])
+						if (!$this->Instructing->updateAll(
+							array('Instructing.user_id'=>$id, 'Instructing.instructor_id'=>$newusr['Instructor']['id']),
+							array('Instructing.user_id'=>$olduser)
+						))
+							die('Instructing Move Fail');
 
-		/*$count = $this->User->find('all', array(
-			'conditions'=>array(
-				'pid != ' =>0
-			),
-			'group'=>'pid having pidcount > 1',
-			'fields'=>array('count(pid) as pidcount', '*')
-		));
-		$this->set('count', count($count));*/
+					$this->loadModel('Ofcm.Instructor');
+					if (!$this->Instructor->deleteAll(
+						array('Instructor.user_id'=>$olduser)
+					))
+						die('Instructors Delete Fail');
 
-		/*$dups = $this->User->find('first', array(
-			'conditions'=>array(
-				'pid != ' =>0
-			),
-			'group'=>'pid having count(pid) > 1'
-		));
+					$this->loadModel('LineItem');
+					if (!$this->LineItem->updateAll(
+						array('LineItem.user_id'=>$id),
+						array('LineItem.user_id'=>$olduser)
+					))
+						die('LineItem Move Fail');
 
-		die(pr($dups));*/
+					$this->loadModel('Location');
+					if (!$this->Location->updateAll(
+						array('Location.user_id'=>$id),
+						array('Location.user_id'=>$olduser)
+					))
+						die('Location Move Fail');
 
+					$this->loadModel('Message');
+					if (!$this->Message->updateAll(
+						array('Message.to_user_id'=>$id),
+						array('Message.to_user_id'=>$olduser)
+					))
+						die('Message to Move Fail');
+					if (!$this->Message->updateAll(
+						array('Message.from_user_id'=>$id),
+						array('Message.from_user_id'=>$olduser)
+					))
+						die('Message from Move Fail');
 
+					$this->loadModel('Note');
+					if (!$this->Note->updateAll(
+						array('Note.user_id'=>$id),
+						array('Note.user_id'=>$olduser)
+					))
+						die('Note Move Fail');
 
-		//if ($dups) //still duplicates to process
-		//{
+					$this->loadModel('Payment');
+					if (!$this->Payment->updateAll(
+						array('Payment.user_id'=>$id),
+						array('Payment.user_id'=>$olduser)
+					))
+						die('Payment Move Fail');
+
+					$this->loadModel('Phone');
+					if (!$this->Phone->updateAll(
+						array('Phone.user_id'=>$id),
+						array('Phone.user_id'=>$olduser)
+					))
+						die('Phone Move Fail');
+
+					$this->loadModel('Post');
+					if (!$this->Post->updateAll(
+						array('Post.user_id'=>$id),
+						array('Post.user_id'=>$olduser)
+					))
+						die('Post Move Fail');
+
+					$this->loadModel('Post');
+					if (!$this->Post->updateAll(
+						array('Post.user_id'=>$id),
+						array('Post.user_id'=>$olduser)
+					))
+						die('Post Move Fail');
+
+					$this->loadModel('QuestionAnswer');
+					if (!$this->QuestionAnswer->updateAll(
+						array('QuestionAnswer.user_id'=>$id),
+						array('QuestionAnswer.user_id'=>$olduser)
+					))
+						die('QuestionAnswer Move Fail');
+
+					$this->loadModel('Studentlist');
+					if (!$this->Studentlist->updateAll(
+						array('Studentlist.user_id'=>$id),
+						array('Studentlist.user_id'=>$olduser)
+					))
+						die('Studentlist Move Fail');
+
+					$this->loadModel('TeleformData');
+					if (!$this->TeleformData->updateAll(
+						array('TeleformData.user_id'=>$id),
+						array('TeleformData.user_id'=>$olduser)
+					))
+						die('TeleformData Move Fail');
+
+					$this->loadModel('Ofum.UsersGroup');
+					if (!$this->UsersGroup->deleteAll(
+						array('UsersGroup.user_id'=>$olduser)
+					))
+						die('UsersGroup Delete Fail');
+
+					//merge any better user details (if any)
+
+					$oldusr = $this->User->read(null, $olduser);
+
+					$this->User->create();
+					$this->User->id = $id;
+					if (!empty($oldusr['User']['pid']) && empty($newusr['User']['pid']))
+						$this->User->saveField('pid', $oldusr['User']['pid']);
+
+					if (!empty($oldusr['User']['ssid']) && empty($newusr['User']['ssid']))
+						$this->User->saveField('ssid', $oldusr['User']['ssid']);
+
+					if (!empty($oldusr['User']['dob']) && empty($newusr['User']['dob']))
+						$this->User->saveField('dob', $oldusr['User']['dob']);
+
+					if (!empty($oldusr['User']['title']) && empty($newusr['User']['title']))
+						$this->User->saveField('title', $oldusr['User']['title']);
+
+					if (!empty($oldusr['User']['main_phone']) && empty($newusr['User']['main_phone']))
+						$this->User->saveField('main_phone', $oldusr['User']['main_phone']);
+					if (!empty($oldusr['User']['other_phone']) && empty($newusr['User']['other_phone']))
+						$this->User->saveField('other_phone', $oldusr['User']['other_phone']);
+
+					if (!empty($oldusr['User']['home_address']) && empty($newusr['User']['home_address']))
+						$this->User->saveField('home_address', $oldusr['User']['home_address']);
+
+					if (!$this->User->delete($olduser))
+						die('old user delete fail');
+				}
+			}
+
+			$this->Session->setFlash('Successfully merged', 'notices/success');
+			$this->redirect(array('action'=>'view', $id));
+		}
+
 
 		$this->User->contain();
 		$user = $this->User->read(null, $id);
@@ -563,14 +707,13 @@ class UsersController extends OfumAppController
 			'Payment',
 			'Location',
 			'Contact',
-			'Message',
 			'UsersGroup',
 			'Note',
 			'Post',
 			'TeleformData'
 		));
 
-		$conditions['conditions']= array();
+		$conditions['conditions']= array('User.id not'=>$id);
 
 		$ors = array();
 		if ($user['User']['pid'])
@@ -579,31 +722,110 @@ class UsersController extends OfumAppController
 		if ($user['User']['ssid'])
 			$ors['ssid']=$user['User']['ssid'];
 
-		$ands = array();
-		if ($user['User']['first_name'] && $user['User']['last_name'])
-			$ands = array(
-				'first_name'=>$user['User']['first_name'],
-				'last_name'=>$user['User']['last_name']
-			);
+		if ($user['User']['dob'] != '1993-01-01' && $user['User']['dob'] != '0000-00-00')
+			$ors['dob']=$user['User']['dob'];
+
+		//$ors['email like']=substr($user['User']['email'],0,strpos($user['User']['email'], '@')).'%';
 
 		if (!empty($ors))
 			$conditions['conditions']['or']=$ors;
 
-		//if (!empty($ands))
-		//	$conditions['conditions']['and']=$ands;
+
+		$ands = array();
+		if ($user['User']['first_name'] && $user['User']['last_name'])
+		{
+			$ands = array(
+				'first_name'=>$user['User']['first_name'],
+				'last_name'=>$user['User']['last_name']
+			);
+			$conditions['conditions']['and']=$ands;
+
+			if (!$this->User->find('count', $conditions))
+			{
+				unset($conditions['conditions']['and']);
+				$conditions['conditions']['first_name']=$user['User']['first_name'].' '.$user['User']['last_name'];
+
+				if (!$this->User->find('count', $conditions))
+				{
+					unset($conditions['conditions']['first_name']);
+				}
+			}
+		}
+		else
+		{
+			if(strpos($user['User']['first_name'], ' '))
+			{
+				list($fname, $lname) = split(' ', $user['User']['first_name']);
+				$ands = array(
+					'first_name like'=>$fname,
+					'last_name like'=>$lname
+				);
+				$conditions['conditions']['and']=$ands;
+
+				if (!$this->User->find('count', $conditions))
+				{
+					unset($conditions['conditions']['and']);
+					$conditions['conditions']['first_name']=$user['User']['first_name'];
+
+					if (!$this->User->find('count', $conditions))
+					{
+						unset($conditions['conditions']['first_name']);
+					}
+				}
+			}
+			else
+			{
+				$conditions['conditions']['first_name']=$user['User']['first_name'];
+				if (!$this->User->find('count', $conditions))
+				{
+					unset($conditions['conditions']['first_name']);
+				}
+			}
+		}
 
 		//die(pr($conditions));
 
 		if (!empty($conditions['conditions']))
-			$this->set('users', $this->User->find('all', $conditions));
+		{
+			if (count($conditions['conditions'])==1)
+			{
+				$this->Session->setFlash('No duplicates found', 'notices/success');
+				$this->redirect(array('action'=>'view', $id));
+			}
+			$users = $this->User->find('all', $conditions);
+			if (empty($users))
+			{
+				$this->Session->setFlash('No duplicates found', 'notices/success');
+				$this->redirect(array('action'=>'view', $id));
+			}
+			$this->set('users', $users);
+		}
 		else
 			$this->set('users', array());
 
 
-		$this->fire('Plugin.Ofum.admin_view_beforeRead');
+		$this->User->contain(array(
+			'Attending.Course.CourseType',
+			'Attending.Course.Status',
+			'Attending.Conference',
+			'Attending.Payment',
+			'Attending.Status',
+			'Attending.User',
+			'Payment.Status',
+			'Instructor.Instructing.Course.CourseType',
+			'Instructor.Instructing.Course.Status',
+			'Instructor.Instructing.Status'
+		));
 		$this->set('user', $this->User->read(null, $id));
 		//}
 
+	}
+
+	public function admin_impersonate($id)
+	{
+		$user = $this->User->read(null, $id);
+		$this->Auth->login($user['User']);
+		$this->redirect('/');
 	}
 
 	//instructor sections
