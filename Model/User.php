@@ -5,7 +5,9 @@ class User extends OfumAppModel
 {
 
 	public $belongsTo = array(
-		'Agency',
+		'Agency'=>array(
+			'counterCache'=>true
+		),
 		'HomeAddress'=>array(
 			'className'=>'Location',
 			'foreignKey'=>'home_address'
