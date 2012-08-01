@@ -833,20 +833,6 @@ class UsersController extends OfumAppController
 	{
 		if ($id == null)
 			$id = $this->Auth->user('id');
-		else
-		{
-			//make sure the logged user can edit the requested id
-			switch($this->Auth->user('group_id'))
-			{
-				case 1:
-				case 2:
-				case 3:
-				case 7:
-				case 8:
-					$this->Session->setFlash('You do not have permission to view this instructor.');
-					$this->redirect(array('action'=>'view'));
-			}
-		}
 
 		$this->User->contain(array(
 			'Agency',
