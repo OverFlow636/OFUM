@@ -853,7 +853,7 @@ class UsersController extends OfumAppController
 			'order'=>array(
 				'Course.startdate'
 			)
-		),false);
+		));
 
 		$this->Instructing->contain(array('Course.CourseType', 'Course.Hosting', 'Course.Contact', 'Status'));
 		$currentUser['Instructing']['approved'] = $this->Instructing->find('all', array(
@@ -865,7 +865,7 @@ class UsersController extends OfumAppController
 			'order'=>array(
 				'Course.startdate'
 			)
-		),false);
+		));
 
 
 		$this->set('currentUser', $currentUser);
