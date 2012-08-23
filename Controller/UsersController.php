@@ -842,7 +842,7 @@ class UsersController extends OfumAppController
 
 
 		$this->loadModel('Ofcm.Instructing');
-		$this->Instructing->contain(array('Course.CourseType', 'Course.Hosting', 'Course.Contact', 'Status'));
+		$this->Instructing->contain(array('Course.CourseType', 'Status'));
 		$currentUser['Instructing']['pending'] = $this->Instructing->find('all', array(
 			'conditions'=>array(
 				'user_id'=>$id,
@@ -855,7 +855,7 @@ class UsersController extends OfumAppController
 			)
 		));
 
-		$this->Instructing->contain(array('Course.CourseType', 'Course.Hosting', 'Course.Contact', 'Status'));
+		$this->Instructing->contain(array('Course.CourseType', 'Status'));
 		$currentUser['Instructing']['approved'] = $this->Instructing->find('all', array(
 			'conditions'=>array(
 				'user_id'=>$id,
@@ -869,6 +869,42 @@ class UsersController extends OfumAppController
 
 
 		$this->set('currentUser', $currentUser);
+
+		$this->loadModel('Instructor');
+		$this->Instructor->contain(array(
+			'InstructorHistory'
+		));
+		$data = $this->Instructor->findByUserId($id);
+		$this->set('instructor', $data);
+
+		$results = $this->Instructor->Tier->TierRequirement->test($data);
+		$this->Instructor->Tier->contain(array(
+			'TierRequirement'
+		));
+		$tiers =$this->Instructor->Tier->find('all');
+		$this->set(compact('tiers', 'results'));
+
+		$onlything = true;
+		$reviewid = 0;
+		foreach($tiers as $tier)
+			if ($tier['Tier']['id'] == $data['Instructor']['tier_id'])
+			{
+				foreach($tier['TierRequirement'] as $tr)
+				{
+					if ($tr['review'] == true && $results[$tier['Tier']['id']][$tr['id']]['test'] == 0)
+					{
+						$reviewid = $tr['id'];
+					}
+					elseif (!$results[$tier['Tier']['id']][$tr['id']]['test'])
+					{
+						$onlything = false;
+					}
+				}
+			}
+
+		if ($onlything && $reviewid)
+			$this->set('needreview', $reviewid);
+
 	}
 	public function instructor_profile($id = null)
 	{
