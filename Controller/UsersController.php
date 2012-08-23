@@ -872,7 +872,8 @@ class UsersController extends OfumAppController
 
 		$this->loadModel('Instructor');
 		$this->Instructor->contain(array(
-			'InstructorHistory'
+			'InstructorHistory',
+			'TierReview.Status'
 		));
 		$data = $this->Instructor->findByUserId($id);
 		$this->set('instructor', $data);
