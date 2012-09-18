@@ -5,7 +5,9 @@ class UsersController extends OfumAppController
 {
     public function beforeFilter()
 	{
-        parent::beforeFilter();
+		if ($this->request->params['action'] == 'kiosk_view')
+			$this->Security->csrfCheck = false;
+		parent::beforeFilter();
         $this->Auth->allow('login', 'logout', 'register', 'passwordReset', 'admin_impersonate');
     }
 
@@ -91,7 +93,7 @@ class UsersController extends OfumAppController
 					$lid = $this->User->Location->process($result, $this);
 					if ($lid)
 						$this->User->save(array(
-							'user_id'		=> $this->request->data['User']['id'],
+							'id'			=> $this->request->data['User']['id'],
 							'home_address'	=> $lid
 						));
 
@@ -930,5 +932,36 @@ class UsersController extends OfumAppController
 		}
 		else
 			$this->set('user', null);
+	}
+
+
+
+
+	public function kiosk_view($id)
+	{
+		if ($this->request->is('post') || $this->request->is('put'))
+		{
+			if (!empty($this->request->data['HomeAddress']['addr1']))
+			{
+				$result = $this->Usps->process($this->request->data['HomeAddress']['addr1'], $this->request->data['HomeAddress']['zip5'], $this->request->data['HomeAddress']['addr2']);
+				if (!empty($this->request->data['HomeAddress']['id']))
+					$result['id'] = $this->request->data['HomeAddress']['id'];
+				$result['name'] = 'Home Address';
+				$result['user_id'] = $this->request->data['User']['id'];
+				$lid = $this->User->Location->process($result, $this);
+				if ($lid)
+					$this->request->data['User']['home_address'] = $this->User->Location->id;
+			}
+			if ($this->User->save($this->request->data))
+			{
+				die('Successfully saved user record');
+			}
+			else
+				die('Error saving user'. pr($this->User->invalidFields()));
+		}
+		$this->User->contain(array(
+			'HomeAddress'
+		));
+		$this->request->data =  $this->User->read(null, $id);
 	}
 }
