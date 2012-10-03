@@ -941,7 +941,7 @@ class UsersController extends OfumAppController
 	{
 		if ($this->request->is('post') || $this->request->is('put'))
 		{
-			if (!empty($this->request->data['HomeAddress']['addr1']))
+			/*if (!empty($this->request->data['HomeAddress']['addr1']))
 			{
 				$result = $this->Usps->process($this->request->data['HomeAddress']['addr1'], $this->request->data['HomeAddress']['zip5'], $this->request->data['HomeAddress']['addr2']);
 				if (!empty($this->request->data['HomeAddress']['id']))
@@ -951,7 +951,7 @@ class UsersController extends OfumAppController
 				$lid = $this->User->Location->process($result, $this);
 				if ($lid)
 					$this->request->data['User']['home_address'] = $this->User->Location->id;
-			}
+			}*/
 			if ($this->User->save($this->request->data))
 			{
 				die('Successfully saved user record');
